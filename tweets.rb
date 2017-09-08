@@ -53,6 +53,14 @@ class Tweets
       else
         got_tweets = false
       end
+    rescue Twitter::Error::HTTPTooManyRequests => e
+      puts "Rate limit reached. Pausing on #{e.rate_limit.rest_in} seconds"
+      sleep e.rate_limit.rest_in
+      retry #will continue to retry until the limit fucks off
+
+    rescue StandardError => e
+      puts e.inspect
+      exit(1)
     end
   end
 end
