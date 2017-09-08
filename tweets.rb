@@ -63,4 +63,23 @@ class Tweets
       exit(1)
     end
   end
+    tweets.each do |tweet|
+      begin
+        tweet_age = SECONDS - tweet_created_at
+        tweet_age_in_days = (tweet_age/(24 * 60 * 60)).round
+        if(tweet_age > AGE_SECONDS) then
+          puts "Ignored tweets from #{tweet_age_in_days}D old"
+        end
+        puts "#{tweet.text}"
+
+      rescue Twitter::Error::HTTPTooManyRequests => e
+      puts "Rate limit reached. Pausing on #{e.rate_limit.rest_in} seconds"
+      sleep e.rate_limit.rest_in
+      retry #will continue to retry until the limit fucks off
+
+      rescue StandardError => e
+        puts e.inspect
+        exit
+        end
+    end
 end
