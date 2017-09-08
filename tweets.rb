@@ -39,5 +39,20 @@ class Tweets
   tweets = []
   got_tweets = true
   oldest_tweet_id = 999999999999999999999999
-  
+
+  while got_tweets do
+    begin
+      new_tweets = client.user_timeline(TWITTER_USER,  {:count => REQ,
+      :max_id => oldest_tweet_id,
+      :include_entities => false,
+      :include_retweets => true}) #change to false if you don't want your rt's deleted
+
+      if(new_tweets.length > 0) then
+        puts "Obtained: #{new_tweets.length}"
+        tweets += new_tweets
+      else
+        got_tweets = false
+      end
+    end
+  end
 end
