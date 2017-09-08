@@ -42,6 +42,34 @@ class Likes
         puts "No more to obtain"
         got_likes = false
       end
+    rescue Twitter::Error::HTTPTooManyRequests => e
+      puts "Hit the request limit for #{e.rate_limit.rest_in} seconds"
+      sleep e.rate_limit.rest_in
+      retry
+
+    rescue StandardError => e
+      puts e.inspect
+      exit
     end
   end
+
+  puts "Removing likes"
+
+  likes.each do |fave|
+    puts "Removing likes from #{likes.id}"
+    begin
+      client.unlike(likes.id)
+
+    rescue Twitter::Error::HTTPTooManyRequests => e
+      puts "Hit the request limit for #{e.rate_limit.rest_in} seconds"
+      sleep e.rate_limit.rest_in
+      retry
+
+    rescue StandardError => e
+      puts e.inspect
+      exit
+    end
+  end
+
+    puts "Finished removing likes"
 end
