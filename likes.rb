@@ -17,4 +17,31 @@ class Likes
   SECONDS = Time.now
 
   REQ = 200
+
+  client = Twitter::REST::Client.new do |config|
+    config.consumer_key = CONSUMER_KEY
+    config.consumer_secret = CONSUMER_SECRET
+    config.access_token = OAUTH_TOKEN
+    config.access_token_secret = OAUTH_SECRET
+  end
+
+  likes = []
+  oldest_like_id = 99999999999999999999
+  got_likes = true
+
+  puts "Collecting likes"
+
+  while got_likes do
+    begin
+      new_likes = client.likes(USER,{:count => 200, :max_id => oldest_like_id})
+      if(new_likes.length > 0) then
+        oldest_like_id = new_likes.id - 1
+        likes += new_likes
+        puts "Got more likes #{new_likes.id}"
+      else
+        puts "No more to obtain"
+        got_likes = false
+      end
+    end
+  end
 end
